@@ -24,7 +24,7 @@
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/IQExotic/your-bot-repo.git
+   git clone https://github.com/IQExotic/Exoticus.git
    ```
 
 2. Install dependencies:
