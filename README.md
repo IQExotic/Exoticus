@@ -33,7 +33,7 @@
    pip install -r requirements.txt
    ```
 
-3. Create a file named `.env` in the root directory and add your bot token:
+3. Edit the file named `.env` in the root directory and replace "YOUR_BOT_TOKEN_HERE" with your bot token:
 
    ```
    token=YOUR_BOT_TOKEN_HERE
