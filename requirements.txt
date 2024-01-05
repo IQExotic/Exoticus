@@ -1,0 +1,4 @@
+hikari==2.0.0.dev122
+hikari-lightbulb==2.3.3
+Pillow==9.5.0
+psycopg2==2.9.9
