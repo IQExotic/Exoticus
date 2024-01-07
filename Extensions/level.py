@@ -198,7 +198,6 @@ async def user_has_levelup(last_xp, current_xp, user_id):
 
     # ueberpruefe das level nach der nachricht des users mit get_level_from_xp(xp)
     current_level = get_level_from_xp(current_xp)
-
     if last_level == current_level:
         return
     # wenn das aktuelle level hoeher ist als das letzte ist sende eine level up nachricht
@@ -254,6 +253,7 @@ async def give_xp_while_in_voice_channel(user_id, guild_id, in_voice):
                         "voice", "in_voice", user_id)
                     if in_voice_unsorted != None:
                         in_voice = in_voice_unsorted[0]
+                        last_xp = current_xp
 
 
 @plugin.listener(hikari.MessageCreateEvent)
