@@ -1,10 +1,13 @@
-import lightbulb
 import hikari
-from hikari.components import ButtonStyle
+import hikari.components
+import lightbulb
+
+import json
+
 from datetime import datetime, timedelta
 from difflib import SequenceMatcher
-import json
 from .functions import *
+from config import *
 
 
 plugin = lightbulb.Plugin("filter")
@@ -259,7 +262,6 @@ async def add_key_words(ctx: lightbulb.Context) -> None:
     type = ctx.options.art
     word = ctx.options.wort
     author = ctx.member
-    log_keyword_channel_id = 1035396858022989934
     file = "key-words.json"
 
     log_keyword_channel = await plugin.bot.rest.fetch_channel(log_keyword_channel_id)

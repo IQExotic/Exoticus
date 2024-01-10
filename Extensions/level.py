@@ -1,12 +1,16 @@
-import asyncio
 import hikari
-import lightbulb
-import datetime
 import hikari.interactions
+import lightbulb
+
+import asyncio
+import datetime
+import random
 from datetime import datetime
+
 from .db import *
 from .functions import *
-import random
+from config import *
+
 
 plugin = lightbulb.Plugin("level")
 
@@ -114,24 +118,9 @@ level_from_xp = {
     100: 55100,
 }
 
-level_roles = {
-    1: 1051523904042176623,
-    5: 964871361728225301,
-    10: 964871770337325106,
-    20: 964871881889022012,
-    30: 1034178186235367495,
-    40: 1034178159534424084,
-    50: 1034178154211844116,
-    60: 1034178105956380702,
-    70: 1034178101648830484,
-    80: 1034178098297569321,
-    90: 1034178094086508629,
-    100: 1034178076822749284,
-}
-
 
 async def send_level_up_message(current_level, user_id):
-    channel = await fetch_channel_from_id(963135075376046090)
+    channel = await fetch_channel_from_id(level_up_message_channel_id)
     # Await the fetch_user_from_id function
     user = await fetch_user_from_id(user_id)
     if user is not None:
@@ -258,7 +247,6 @@ async def give_xp_while_in_voice_channel(user_id, guild_id, in_voice):
 
 @plugin.listener(hikari.MessageCreateEvent)
 async def on_message_create(event: hikari.MessageCreateEvent) -> None:
-    forbidden_channels = [886559555629244417]
     # wenn der author der nachricht ein bot ist, stoppe
     if event.author.is_bot:
         return
@@ -328,7 +316,6 @@ async def xpedit(ctx: lightbulb.SlashContext) -> None:
 
     user_id = user.id
     guild_id = ctx.guild_id
-    xp_log_channel_id = 1192572473619783841
 
     async def send_embed():
         title = "XP Log"
@@ -377,7 +364,7 @@ async def xpedit(ctx: lightbulb.SlashContext) -> None:
 @lightbulb.command("rank", "Zeigt die XP und das Level des Benutzers an.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def rank(ctx: lightbulb.SlashContext) -> None:
-    if ctx.channel_id == 886559555629244417:
+    if ctx.channel_id in forbidden_channels:
         if ctx.options.user is None:
             user = ctx.author
         else:

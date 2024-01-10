@@ -5,6 +5,7 @@ import lightbulb
 import datetime
 import hikari.interactions
 from datetime import datetime
+from config import *
 
 import requests
 from .functions import *
@@ -13,10 +14,6 @@ from psycopg2.errors import UniqueViolation
 import io
 
 plugin = lightbulb.Plugin("join")
-
-join_role_ids = [923852855369150464, 1133963927332597781, 963377040025858068, 1022160760840933417, 1002387932235190402,
-                 1002387411097100348, 1084147032240959528, 923852377549852752, 1022176675389259866, 964871238520545362, 963377131251982387]
-log_channel_id = 1028231110980804729
 
 
 async def log_embed_join(event, member):
@@ -161,7 +158,7 @@ async def on_member_join(event: hikari.MemberCreateEvent):
     avatar_url = str(member.avatar_url)
     joincard = create_joincard(username, member_count_int, avatar_url)
 
-    channel = await fetch_channel_from_id(678607633552244756)
+    channel = await fetch_channel_from_id(welcome_channel_id)
     await channel_send_with_attachment(channel, f"Hey {member.mention}, Wilkommen auf Sector 7! Sag doch mal Hallo im ⁠<#845059359129206784>", joincard, user_mentions=True)
     while member.is_pending:
         await asyncio.sleep(1)

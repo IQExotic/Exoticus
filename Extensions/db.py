@@ -1,6 +1,7 @@
 import json
 import psycopg2
-from config import config
+from database_config import config
+
 schema = "sector"
 
 

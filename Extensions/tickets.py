@@ -1,7 +1,9 @@
-import lightbulb
 import hikari
 from hikari import CustomEmoji, components
+import lightbulb
+
 from .functions import *
+from config import *
 
 plugin = lightbulb.Plugin("tickets")
 
@@ -111,10 +113,6 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
         report_ticket_type_string = "Report"
         support_ticket_type_string = "Support"
         apply_ticket_type_string = "Bewerbungs"
-
-        report_category_id = 1005455062157512754
-        support_category_id = 1005455243959607366
-        apply_category_id = 1005455133804613682
 
         report_ticket_info_text = f"**Wie geht's weiter?**\nZunächst einmal danke, dass du mithilfst, unsere Community sauber zu halten!\n\nUm dein Ticket bearbeiten zu können, benötigen wir einige Informationen:\n- Wen möchtest du melden?\n- Was ist vorgefallen?\n- Bitte füge alle relevanten Beweise, wie Screenshots oder Clips, hinzu, sofern vorhanden.\n\nFalls du noch weitere Informationen hast, die bei der Bearbeitung deines Falles hilfreich sein könnten, lass es uns wissen.\n\nEin Teammitglied wird sich so schnell wie möglich deinem Fall annehmen und sich anschließend bei dir melden."
         support_ticket_info_text = "**Wie geht's weiter?**\nBitte schildere dein Anliegen. Ein Teammitglied wird sich so schnell wie möglich deinem Fall widmen und sich anschließend bei dir melden."
