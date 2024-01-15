@@ -39,7 +39,13 @@
    token=YOUR_BOT_TOKEN_HERE
    ```
 
-4. Run the bot:
+4. Go into the Bots Directory::
+
+   ```bash
+   cd ./src/DiscordBot
+   ```
+   
+5. Run the bot:
 
    ```bash
    python bot.py
