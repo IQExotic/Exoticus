@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "Exoticus"
+version = "1.0.5"
+description = "An open-source Discord bot designed to serve as an educational example, showcasing the effective application of Hikari and Hikari-Lightbulb."
+
+license = "GPLv3"
+repository = "https://github.com/IQExotic/Exoticus"
+readme = "README.md"
+
+authors = [
+    "Felix Prinz <https://www.felixprinz.me/>",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+hikari = {extras = ["speedups"], version = "^2.0.0.dev122"}
+hikari-lightbulb = "^2.3.5"
+Pillow = "^9.5.0"
+aiofiles = "^23.2.1"
+apscheduler = "^3.10.4"
+psutil = "^5.9.7"
+python-dotenv = "^1.0.0"
+toml = "^0.10.2"
+uvloop = "^0.19.0"
+asyncpg = "^0.29.0"
+
+[tool.poetry.dev-dependencies]
+
+[tool.black]
+
+[build-system]
