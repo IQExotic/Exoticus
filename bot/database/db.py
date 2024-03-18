@@ -13,11 +13,11 @@ from bot.config import Config
 class Database:
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.host = Config.PG_HOST
-        self.user = Config.PG_USER
-        self.password = Config.PG_PASS
-        self.port = Config.PG_PORT
-        self.schema = Config.PG_DB
+        self.host = self.bot.config.PG_HOST
+        self.user = self.bot.config.PG_USER
+        self.password = self.bot.config.PG_PASS
+        self.port = self.bot.config.PG_PORT
+        self.schema = self.bot.config.PG_DB
         self._calls = 0
 
 

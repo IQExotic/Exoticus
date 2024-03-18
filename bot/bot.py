@@ -11,9 +11,9 @@ from bot.database.db import Database
 
 class Bot(lightbulb.BotApp):
 
-    def __init__(self, version) -> None:
+    def __init__(self, version, config) -> None:
         self.dt = dt
-        self.config = Config
+        self.config = config
         self.version = version
         self._extensions = [p.stem for p in Path(".").glob("./bot/extensions/*.py")]
         self._dynamic = "./data/dynamic"  # for error logs
@@ -21,12 +21,15 @@ class Bot(lightbulb.BotApp):
         self._transcripts = ".data/transcripts"  # for ticket logs
         self.db = Database(self)
 
-        super().__init__(
-            token=self.config.TOKEN,
-            intents=hikari.Intents.ALL_UNPRIVILEGED
-    | hikari.Intents.MESSAGE_CONTENT
-    | hikari.Intents.GUILD_MEMBERS,
-        )
+        if self.config.TOKEN:
+            super().__init__(
+                token=self.config.TOKEN,
+                intents=hikari.Intents.ALL_UNPRIVILEGED
+        | hikari.Intents.MESSAGE_CONTENT
+        | hikari.Intents.GUILD_MEMBERS,
+            )
+        else:
+            raise ValueError("No token provided")
 
     def run(self) -> None:
         self.event_manager.subscribe(hikari.StartingEvent, self.on_starting)
@@ -44,6 +47,7 @@ class Bot(lightbulb.BotApp):
 
     async def on_starting(self, event: hikari.StartingEvent) -> None:
         print("🔄 • Running setup...")
+        
 
         print("🔄 • Connecting to database...")
         await self.db.connect()
