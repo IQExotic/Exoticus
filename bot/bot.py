@@ -40,7 +40,7 @@ class Bot(lightbulb.BotApp):
 
         super().run(
             activity=hikari.Activity(
-                name=f"@Exoticus help • Version {self.version}",
+                name=f"@Exoticus • Version {self.version}",
             ),
             status=hikari.Status.ONLINE
         )
@@ -69,8 +69,12 @@ class Bot(lightbulb.BotApp):
 
     async def on_started(self, event: hikari.StartedEvent) -> None:
         print("🔄 • Connecting to Discord...")
-        heartbeat_latency = (self.heartbeat_latency * 1_000)
-        print(f"✅ • Connected to Discord | {heartbeat_latency:,.0f} ms.")
+        try:
+            heartbeat_latency = (self.heartbeat_latency * 1_000)
+            print(f"✅ • Connected to Discord | {heartbeat_latency:,.0f} ms.")
+        except Exception as e:
+            print(f"❌ • Failed to connect to Discord")
+            print(e)
 
         print("🔄 • Synchronising database...")
         try:
@@ -79,14 +83,6 @@ class Bot(lightbulb.BotApp):
         except Exception as e:
             print(f"❌ • Failed to synchronise database")
             print(e)
-        
-        try:
-            await self.load_config()
-            print("✅ • Loaded config.")
-        except Exception as e:
-            print(f"❌ • Failed to load config")
-            print(e)
-        
 
         me = self.get_me()
         if me is not None:
@@ -99,12 +95,18 @@ class Bot(lightbulb.BotApp):
         print("🔄 • Closing connection to Discord...")
 
     async def on_stopped(self, event: hikari.StoppedEvent) -> None:
-        await self.db.close()
-        print("✅ • Connection to database closed.")
+        print("🔄 • Closing connection to database...")
+        try:
+            await self.db.close()
+            print("✅ • Connection to database closed.")
+        except Exception as e:
+            print(f"❌ • Failed to close connection to database")
+            print(e)
+        
         print("✅ • Connection to Discord closed.")
 
     
-    async def load_config(self) -> None:
-        # Load the config from the database
-        guild_id = 
-        self.config.DEFAULT_PREFIX = await self.db.field(f"SELECT DEFAULT_PREFIX FROM {self.db.schema}.system WHERE GUILD_ID = $1", guild_id)
+    # async def load_config(self) -> None:
+    #     # Load the config from the database
+    #     guild_id = 678607632692543509
+    #     self.config.DEFAULT_PREFIX = await self.db.field(f"SELECT DEFAULT_PREFIX FROM {self.db.schema}.system WHERE GUILD_ID = $1", guild_id)

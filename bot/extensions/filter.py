@@ -313,7 +313,7 @@ async def add_key_words(ctx: lightbulb.Context) -> None:
 @plugin.listener(hikari.MessageCreateEvent)
 async def on_message_create(event: hikari.MessageCreateEvent) -> None:
     lfg_id = 845059359129206784
-    file = "key-words.json"
+    file = "./bot/data/static/key-words.json"
     with open(file, "r") as f:
         forbidden_words = json.load(f)
 

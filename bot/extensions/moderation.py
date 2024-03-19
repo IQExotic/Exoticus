@@ -9,9 +9,8 @@ plugin = lightbulb.Plugin("moderation")
 @lightbulb.command("ping", "ping pong!")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def ping(event: lightbulb.Context) -> None:
-    await event.respond("Pong!")
-    await event.respond(f"prefix {plugin.bot.config.DEFAULT_PREFIX}")
-
+    guild_id = event.guild_id
+    await event.respond("That")
 
 
 async def mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row):
