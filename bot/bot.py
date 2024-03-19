@@ -54,8 +54,12 @@ class Bot(lightbulb.BotApp):
         print("✅ • Connected to database.")
 
         for ext in self._extensions:
-            self.load_extensions(f"bot.extensions.{ext}")
-            print(f"☑️  • {ext} extension loaded")
+            try:
+                self.load_extensions(f"bot.extensions.{ext}")
+                print(f"☑️  • {ext} extension loaded")
+            except Exception as e:
+                print(f"❌ • {ext} extension failed to load")
+                print(e)
 
         print("✅ • Setup complete.")
 

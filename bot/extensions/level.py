@@ -8,7 +8,7 @@ import random
 from datetime import datetime
 
 from .functions import *
-from bot.config import *
+
 
 
 plugin = lightbulb.Plugin("level")
@@ -119,7 +119,7 @@ level_from_xp = {
 
 
 async def send_level_up_message(current_level, user_id):
-    channel = await fetch_channel_from_id(level_up_message_channel_id)
+    channel = await fetch_channel_from_id(plugin.bot.config.LEVEL_UP_MESSAGE_CHANNEL_ID)
     # Await the fetch_user_from_id function
     user = await fetch_user_from_id(user_id)
     if user is not None:
@@ -254,7 +254,7 @@ async def on_message_create(event: hikari.MessageCreateEvent) -> None:
         return  # Skip DM messages
 
     # wenn der channel in dem die nachricht gesendet wurde nicht der bot channel ist, stoppe
-    if event.channel_id not in forbidden_channels:
+    if event.channel_id not in plugin.bot.config.FORBIDDEN_CHANNELS:
         guild_id = event.guild_id  # type: ignore
         user_id = event.author.id
         # wenn die nachricht in einem server gesendet wurde, gib dem user 200 xp
@@ -363,7 +363,7 @@ async def xpedit(ctx: lightbulb.SlashContext) -> None:
 @lightbulb.command("rank", "Zeigt die XP und das Level des Benutzers an.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def rank(ctx: lightbulb.SlashContext) -> None:
-    if ctx.channel_id in forbidden_channels:
+    if ctx.channel_id in plugin.bot.config.FORBIDDEN_CHANNELS:
         if ctx.options.user is None:
             user = ctx.author
         else:
@@ -466,3 +466,10 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
             await message.edit(embed=updated_embed)
             await event.interaction.create_initial_response(hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
             return
+        
+def load(bot):
+    bot.add_plugin(plugin)
+
+
+def unload(bot):
+    bot.remove_plugin(plugin)

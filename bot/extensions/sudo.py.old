@@ -1,0 +1,125 @@
+# exoticus - A Discord bot designed to make your server a safer and better place.
+# Copyright (C) 2021-present  Aoi Yuito
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Aoi Yuito
+# aoi.yuito.ehou@gmail.com
+
+import io
+import os
+import textwrap
+import traceback
+from time import time
+from datetime import datetime
+from contextlib import redirect_stdout
+
+import hikari
+import lightbulb
+from lightbulb import commands
+
+
+from lightbulb.commands.prefix import PrefixCommand
+
+
+def clean_code(code):
+    if code.startswith('```') and code.endswith('```'):
+        return '\n'.join(code.split('\n')[1:-1])
+    return code.strip('`\n')
+
+
+sudo = lightbulb.plugins.Plugin(
+    name="Sudo",
+    description=None,
+    include_datastore=True
+)
+
+@sudo.command()
+@lightbulb.option("zusaetzliches", "Extra Dinge, die ihr anmerken wollt", required=False)
+@lightbulb.option("proof", "Beweismaterial")
+@lightbulb.option("regelbruch", "Die Regel, die der Nutzer verbrochen hat", required=True)
+@lightbulb.option("dauer", "Die Dauer der Sanktion", required=True, choices=[
+    "1 Tag",
+    "3 Tage",
+    "1 Woche",
+    "2 Wochen",
+    "1 Monat",
+    "3 Monate",
+    "Permanent",],
+)
+
+
+@sudo.command()
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.option(name="extension", description="Name of the ext to load.", type=str)
+@lightbulb.command(name="load", aliases=["lext"], description=None, hidden=True)
+@lightbulb.implements(commands.prefix.PrefixCommand)
+async def load_extension(ctx: lightbulb.context.base.Context) -> None:
+    try:
+        ctx.bot.load_extensions(f"exoticus.bot.extensions.{ctx.options.extension}")
+        await ctx.respond(f"{ctx.bot.tick} `{ctx.options.extension}` loaded successfully.")
+    except Exception:
+        await ctx.respond(f"```py\n{traceback.format_exc()}\n```")
+        await ctx.respond(f"{ctx.bot.cross} couldn't load the specified extension.")
+
+
+@sudo.command()
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.option(name="extension", description="Name of the ext to unload.", type=str)
+@lightbulb.command(name="unload", aliases=["ulext"], description=None, hidden=True)
+@lightbulb.implements(commands.prefix.PrefixCommand)
+async def unload_extension(ctx: lightbulb.context.base.Context) -> None:
+    try:
+        ctx.bot.unload_extensions(f"exoticus.bot.extensions.{ctx.options.extension}")
+        await ctx.respond(f"{ctx.bot.tick} `{ctx.options.extension}` unloaded successfully.")
+    except Exception:
+        await ctx.respond(f"```py\n{traceback.format_exc()}\n```")
+        await ctx.respond(f"{ctx.bot.cross} couldn't unloaded the specified extension.")
+
+
+@sudo.command()
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.option(name="extension", description="Name of the ext to reload.", type=str)
+@lightbulb.command(name="reload", aliases=["rlext"], description=None, hidden=True)
+@lightbulb.implements(commands.prefix.PrefixCommand)
+async def reload_extension(ctx: lightbulb.context.base.Context) -> None:
+    try:
+        ctx.bot.reload_extensions(f'exoticus.bot.extensions.{ctx.options.extension}')
+        await ctx.respond(f"{ctx.bot.tick} `{ctx.options.extension}` reloaded successfully.")
+    except Exception:
+        await ctx.respond(f'```py\n{traceback.format_exc()}\n```')
+        await ctx.respond(f"{ctx.bot.cross} couldn't reloaded the specified extension.")
+
+
+@sudo.command()
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.command(name="bot_restart", aliases=["rst"], description=None, hidden=True)
+@lightbulb.implements(commands.prefix.PrefixCommand)
+async def bot_restart_command(ctx: lightbulb.context.base.Context) -> None:
+    await ctx.bot.close()
+    os.system("python -m exoticus")
+
+
+@sudo.command()
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.command(name="shutdown", aliases=["sd"], description=None, hidden=True)
+@lightbulb.implements(PrefixCommand)
+async def shutdown_command(ctx: lightbulb.context.base.Context) -> None:
+    await ctx.bot.close()
+
+def load(bot) -> None:
+    bot.add_plugin(sudo)
+
+def unload(bot) -> None:
+    bot.remove_plugin(sudo)

@@ -3,7 +3,7 @@ from hikari import CustomEmoji, components
 import lightbulb
 
 from .functions import *
-from bot.config import *
+
 
 plugin = lightbulb.Plugin("tickets")
 
@@ -119,11 +119,11 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
         apply_ticket_info_text = "**Wie geht's weiter?**\n\n**Danke, dass du die Initiative ergriffen hast und dich bei uns bewirbst!**\nWir schätzen es, wenn Bewerber ihren eigenen Stil in die Bewerbung einbringen. Das gibt uns einen Einblick, mit welcher Ernsthaftigkeit du an die Sache herangehst. Es gibt jedoch einige Punkte, die uns wichtig sind und die wir gerne in deiner Bewerbung sehen würden.\n\n- Wer bist du?\n- Was machst du in deiner Freizeit (außer online zu sein)?\n- Warum bist du besonders geeignet für uns?\n- Was erwartest du vom Projekt 'Sector 7'?\n\nWenn du Hilfe benötigst oder Fragen hast, melde dich einfach in diesem Ticket!\n\nWir werden uns so schnell wie möglich deine Bewerbung anschauen und uns bei dir melden!"
 
         if ticket_type == "report":
-            await ticket_channel_creat(report_category_id,  report_ticket_type_string, user, guild_id, event, report_ticket_info_text)
+            await ticket_channel_creat(plugin.bot.config.REPORT_CATEGORY_ID,  report_ticket_type_string, user, guild_id, event, report_ticket_info_text)
         elif ticket_type == "support":
-            await ticket_channel_creat(support_category_id, support_ticket_type_string, user, guild_id, event, support_ticket_info_text)
+            await ticket_channel_creat(plugin.bot.config.SUPPORT_CATEGORY_ID, support_ticket_type_string, user, guild_id, event, support_ticket_info_text)
         elif ticket_type == "apply":
-            await ticket_channel_creat(apply_category_id, apply_ticket_type_string, user, guild_id, event, apply_ticket_info_text)
+            await ticket_channel_creat(plugin.bot.config.APPLY_CATEGORY_ID, apply_ticket_type_string, user, guild_id, event, apply_ticket_info_text)
 
     elif costum_id in functional_interaction_list:
         if costum_id == "close":
@@ -242,3 +242,10 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
 
         except Exception as e:
             await error_message("Fehler B-15", e)
+
+def load(bot):
+    bot.add_plugin(plugin)
+
+
+def unload(bot):
+    bot.remove_plugin(plugin)

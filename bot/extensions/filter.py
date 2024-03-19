@@ -7,7 +7,7 @@ import json
 from datetime import datetime, timedelta
 from difflib import SequenceMatcher
 from .functions import *
-from bot.config import *
+
 
 
 plugin = lightbulb.Plugin("filter")
@@ -264,7 +264,7 @@ async def add_key_words(ctx: lightbulb.Context) -> None:
     author = ctx.member
     file = "key-words.json"
 
-    log_keyword_channel = await plugin.bot.rest.fetch_channel(log_keyword_channel_id)
+    log_keyword_channel = await plugin.bot.rest.fetch_channel(plugin.bot.config.LOG_KEYWORD_CHANNEL_ID)
 
     log_keyword_add_embed = hikari.Embed(
         title="LFG Keyword Hinzugefuegt",
@@ -350,3 +350,10 @@ async def on_message_create(event: hikari.MessageCreateEvent) -> None:
             # Nachricht löschen
             await plugin.bot.rest.delete_message(event.channel_id, event.message_id)
     f.close()
+
+def load(bot):
+    bot.add_plugin(plugin)
+
+
+def unload(bot):
+    bot.remove_plugin(plugin)

@@ -2,10 +2,15 @@ import hikari
 import lightbulb
 
 from .functions import *
-from bot.config import *
 
 plugin = lightbulb.Plugin("moderation")
 
+@plugin.command()
+@lightbulb.command("ping", "ping pong!")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def ping(event: lightbulb.Context) -> None:
+    await event.respond("Pong")
+    print(dir(plugin.bot.config))
 
 async def mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row):
     try:
@@ -17,9 +22,9 @@ async def mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zus�
         embed.set_footer(
             text=(f"Uhrzeit: {datetime.now().strftime('%H:%M')}"))
 
-        channel = await fetch_channel_from_id(penalty_channel_id)
+        channel = await fetch_channel_from_id(plugin.bot.config.PENALTY_CHANNEL_ID)
         await channel_send_embed(channel, embed, penalty_row)
-        await event.respond(f"Mod Penalty erstellt in <#{penalty_channel_id}>!")
+        await event.respond(f"Mod Penalty erstellt in <#{plugin.bot.config.PENALTY_CHANNEL_ID}>!")
     except Exception as e:
         await error_message("Fehler MP-01", e)
         content = f"Fehler **MP-01**"
@@ -58,8 +63,8 @@ async def mod_penalty(event: lightbulb.Context) -> None:
         content = "Timeout können nicht länger als 2 Wochen sein!"
         await interaction_response(event, content, component=None)
         return
-
-    if event.channel_id != command_channel_id:
+ 
+    if event.channel_id != plugin.bot.config.COMMAND_CHANNEL_ID:
         content = "Bitte nutze diesen Command nur in <#1143231143425089667>!"
         await interaction_response(event, content, component=None)
         return
@@ -72,7 +77,7 @@ async def mod_penalty(event: lightbulb.Context) -> None:
                 components.ButtonStyle.DANGER,
                 "permban",
                 label="Permanent Bannen",
-                emoji=icon_ban,
+                emoji=plugin.bot.config.BAN_EMOJI_ID,
             )
             await mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row)
             return
@@ -83,7 +88,7 @@ async def mod_penalty(event: lightbulb.Context) -> None:
                 components.ButtonStyle.PRIMARY,
                 "timeout",
                 label=f"{dauer} Timeouten",
-                emoji=icon_timeout,
+                emoji=plugin.bot.config.TIMEOUT_EMOJI_ID,
             )
             await mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row)
             return
@@ -94,7 +99,7 @@ async def mod_penalty(event: lightbulb.Context) -> None:
                 components.ButtonStyle.SECONDARY,
                 "warn",
                 label="Verwarnen",
-                emoji=icon_important,
+                emoji=plugin.bot.config.INFO_EMOJI_ID,
             )
             await mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row)
             return
@@ -156,11 +161,11 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
                         try:
                             await user_send_dm(user, embed, component=None)
                             embed = await create_embed("Permanent Gebannt", f"> **User:** {user.mention} | {user.username}\n> **ID:** {user.id}\n> **Regelbruch:** {regelbruch}\n> **Dauer:** Permanent\n> **Teammitglied:** {moderator}", "#E74D3C")
-                            channel = await fetch_channel_from_id(moderation_log_channel_id)
+                            channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)
                             await channel_send_embed(channel, embed, component=None)
                         except Exception as e:
                             embed = await create_embed("Permanent Gebannt", f"> **User:** {user.mention} | {user.username}\n> **ID:** {user.id}\n> **Regelbruch:** {regelbruch}\n> **Dauer:** Permanent\n> **Teammitglied:** {moderator}", "#E74D3C")
-                            channel = await fetch_channel_from_id(moderation_log_channel_id)
+                            channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)
                             await channel_send_embed(channel, embed, component=None)
                             await error_message("Fehler MP-04", e)
                             content = f"Fehler **MP-04**"
@@ -239,11 +244,11 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
                             try:
                                 await user_send_dm(user, embed, component=None)
                                 embed = await create_embed("Timeout", f"> **User:** {user.mention} | {user.username}\n> **ID:** {user.id}\n> **Regelbruch:** {regelbruch}\n> **Dauer:** Timeout {dauer}\n> **Teammitglied:** {moderator}", "#FF6669")
-                                channel = await fetch_channel_from_id(moderation_log_channel_id)
+                                channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)
                                 await channel_send_embed(channel, embed, component=None)
                             except Exception as e:
                                 embed = await create_embed("Timeout", f"> **User:** {user.mention} | {user.username}\n> **ID:** {user.id}\n> **Regelbruch:** {regelbruch}\n> **Dauer:** Timeout {dauer}\n> **Teammitglied:** {moderator}", "#FF6669")
-                                channel = await fetch_channel_from_id(moderation_log_channel_id)
+                                channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)
                                 await channel_send_embed(channel, embed, component=None)
                                 await error_message("Fehler MP-04", e)
                                 content = f"Fehler **MP-04**"
@@ -331,3 +336,11 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
                 elif custom_id == "remove_warn":
                     # set warn to false in db
                     return
+                
+
+def load(bot):
+    bot.add_plugin(plugin)
+
+
+def unload(bot):
+    bot.remove_plugin(plugin)

@@ -5,7 +5,6 @@ import lightbulb
 import datetime
 import hikari.interactions
 from datetime import datetime
-from bot.config import *
 
 import requests
 from .functions import *
@@ -13,41 +12,27 @@ from .level import *
 from psycopg2.errors import UniqueViolation
 import io
 
-class Join:
-    def __init__(self) -> None:
-        self.LOG_CHANNEL_ID = Config.LOG_CHANNEL_ID
-        self.WELCOME_CHANNEL_ID = Config.WELCOME_CHANNEL_ID
-        self.JOIN_ROLE_IDS = Config.JOIN_ROLE_IDS
-        self.LEVEL_ROLES = Config.LEVEL_ROLES
-        self.FORBIDDEN_CHANNELS = Config.FORBIDDEN_CHANNELS
-        self.XP_LOG_CHANNEL_ID = Config.XP_LOG_CHANNEL_ID
 
 
         
-    class Join:
-        def __init__(self) -> None:
-            self.LOG_CHANNEL_ID = Config.LOG_CHANNEL_ID
-            self.WELCOME_CHANNEL_ID = Config.WELCOME_CHANNEL_ID
-            self.JOIN_ROLE_IDS = Config.JOIN_ROLE_IDS
-            self.LEVEL_ROLES = Config.LEVEL_ROLES
-            self.FORBIDDEN_CHANNELS = Config.FORBIDDEN_CHANNELS
-            self.XP_LOG_CHANNEL_ID = Config.XP_LOG_CHANNEL_ID
+plugin = lightbulb.Plugin("join")
 
-        async def log_embed_join(self, event, member):
-            guild_id = event.guild_id
-            member_count = plugin.bot.rest.fetch_members(guild_id)
-            member_count_int = await member_count.count()
 
-            log_join_embed = hikari.Embed(
-                title="Neuer User",
-                description=f"**User:** {member.mention} | {member.username}\n**ID:** {member.id}\n**Count:** {member_count_int}",
-                color="#4cbb64",
-            )
-            log_join_embed.set_footer(
-                text=(f"Uhrzeit: {datetime.now().strftime('%H:%M')}"))
+async def log_embed_join(event, member):
+    guild_id = event.guild_id
+    member_count = plugin.bot.rest.fetch_members(guild_id)
+    member_count_int = await member_count.count()
 
-            log_channel = await fetch_channel_from_id(self.LOG_CHANNEL_ID)
-            await channel_send_embed(log_channel, log_join_embed)
+    log_join_embed = hikari.Embed(
+        title="Neuer User",
+        description=f"**User:** {member.mention} | {member.username}\n**ID:** {member.id}\n**Count:** {member_count_int}",
+        color="#4cbb64",
+    )
+    log_join_embed.set_footer(
+        text=(f"Uhrzeit: {datetime.now().strftime('%H:%M')}"))
+
+    log_channel = await fetch_channel_from_id(LOG_CHANNEL_ID)
+    await channel_send_embed(log_channel, log_join_embed)
 
 
 async def log_embed_leave(event, member):
@@ -175,7 +160,7 @@ async def on_member_join(event: hikari.MemberCreateEvent):
     avatar_url = str(member.avatar_url)
     joincard = create_joincard(username, member_count_int, avatar_url)
 
-    channel = await fetch_channel_from_id(welcome_channel_id)
+    channel = await fetch_channel_from_id(plugin.bot.config.WELCOME_CHANNEL_ID)
     await channel_send_with_attachment(channel, f"Hey {member.mention}, Wilkommen auf Sector 7! Sag doch mal Hallo im ⁠<#845059359129206784>", joincard, user_mentions=True)
     while member.is_pending:
         await asyncio.sleep(1)
@@ -216,3 +201,10 @@ async def on_member_leave(event: hikari.MemberDeleteEvent):
     db_update_value(table, "in_server", value, 'false')
     current_roles = "[]"
     db_update_value(table, "roles", value, current_roles)
+    
+def load(bot):
+    bot.add_plugin(plugin)
+
+
+def unload(bot):
+    bot.remove_plugin(plugin)
