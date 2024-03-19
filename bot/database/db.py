@@ -18,6 +18,7 @@ class Database:
         self.password = self.bot.config.PG_PASS
         self.port = self.bot.config.PG_PORT
         self.schema = self.bot.config.PG_DB
+        self.build = self.bot._static + "/build.sql"
         self._calls = 0
 
 
@@ -33,7 +34,11 @@ class Database:
             loop=asyncio.get_running_loop(),
         )
 
+        await self.executescript(self.build)
+        await self.commit()
+
     async def close(self) -> None:
+        await self.commit()
         if self.pool is not None:
             await self.pool.close()
 
@@ -41,14 +46,14 @@ class Database:
             # Insert.
             my_guilds = await self.bot.rest.fetch_my_guilds()
 
-            await self.execute(f"CREATE TABLE IF NOT EXISTS {self.schema}.system (GuildID BIGINT PRIMARY KEY)")
-            await self.executemany(f"INSERT INTO {self.schema}.system (GuildID) VALUES ($1) ON CONFLICT DO NOTHING", [(g.id,) for g in my_guilds])
+            await self.execute(f"CREATE TABLE IF NOT EXISTS {self.schema}.system (GUILD_ID BIGINT PRIMARY KEY)")
+            await self.executemany(f"INSERT INTO {self.schema}.system (GUILD_ID) VALUES ($1) ON CONFLICT DO NOTHING", [(g.id,) for g in my_guilds])
 
             # Remove.
-            stored = await self.column("SELECT GuildID FROM system")
+            stored = await self.column("SELECT GUILD_ID FROM system")
             member_of = [g.id for g in my_guilds]
             removals = [(g_id,) for g_id in set(stored) - set(member_of)]
-            await self.executemany("DELETE FROM system WHERE GuildID = $1", removals)
+            await self.executemany("DELETE FROM system WHERE GUILD_ID = $1", removals)
 
             # Commit.
             await self.commit()

@@ -16,9 +16,9 @@ class Bot(lightbulb.BotApp):
         self.config = config
         self.version = version
         self._extensions = [p.stem for p in Path(".").glob("./bot/extensions/*.py")]
-        self._dynamic = "./data/dynamic"  # for error logs
-        self._static = "./data/static"
-        self._transcripts = ".data/transcripts"  # for ticket logs
+        self._dynamic = "./bot/data/dynamic"  # for error logs
+        self._static = "./bot/data/static"
+        self._transcripts = "./bot/data/transcripts"  # for ticket logs
         self.db = Database(self)
 
         if self.config.TOKEN:
@@ -47,11 +47,15 @@ class Bot(lightbulb.BotApp):
 
     async def on_starting(self, event: hikari.StartingEvent) -> None:
         print("🔄 • Running setup...")
-        
 
         print("🔄 • Connecting to database...")
-        await self.db.connect()
-        print("✅ • Connected to database.")
+        try:
+            await self.db.connect()
+            print("✅ • Connected to database.")
+        except Exception as e:
+            print(f"❌ • Failed to connect to database")
+            print(e)
+        
 
         for ext in self._extensions:
             try:
@@ -69,8 +73,20 @@ class Bot(lightbulb.BotApp):
         print(f"✅ • Connected to Discord | {heartbeat_latency:,.0f} ms.")
 
         print("🔄 • Synchronising database...")
-        await self.db.sync()
-        print("✅ • Synchronised database.")
+        try:
+            await self.db.sync()
+            print("✅ • Synchronised database.")
+        except Exception as e:
+            print(f"❌ • Failed to synchronise database")
+            print(e)
+        
+        try:
+            await self.load_config()
+            print("✅ • Loaded config.")
+        except Exception as e:
+            print(f"❌ • Failed to load config")
+            print(e)
+        
 
         me = self.get_me()
         if me is not None:
@@ -86,3 +102,9 @@ class Bot(lightbulb.BotApp):
         await self.db.close()
         print("✅ • Connection to database closed.")
         print("✅ • Connection to Discord closed.")
+
+    
+    async def load_config(self) -> None:
+        # Load the config from the database
+        guild_id = 
+        self.config.DEFAULT_PREFIX = await self.db.field(f"SELECT DEFAULT_PREFIX FROM {self.db.schema}.system WHERE GUILD_ID = $1", guild_id)

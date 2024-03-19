@@ -264,7 +264,7 @@ async def add_key_words(ctx: lightbulb.Context) -> None:
     author = ctx.member
     file = "key-words.json"
 
-    log_keyword_channel = await plugin.bot.rest.fetch_channel(plugin.bot.config.LOG_KEYWORD_CHANNEL_ID)
+    log_keyword_channel = await plugin.bot.rest.fetch_channel(plugin.bot.config.LOG_KEYWORD_CHANNEL_ID)             # type: ignore
 
     log_keyword_add_embed = hikari.Embed(
         title="LFG Keyword Hinzugefuegt",

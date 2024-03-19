@@ -9,8 +9,10 @@ plugin = lightbulb.Plugin("moderation")
 @lightbulb.command("ping", "ping pong!")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def ping(event: lightbulb.Context) -> None:
-    await event.respond("Pong")
-    print(dir(plugin.bot.config))
+    await event.respond("Pong!")
+    await event.respond(f"prefix {plugin.bot.config.DEFAULT_PREFIX}")
+
+
 
 async def mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row):
     try:
@@ -22,9 +24,9 @@ async def mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zus�
         embed.set_footer(
             text=(f"Uhrzeit: {datetime.now().strftime('%H:%M')}"))
 
-        channel = await fetch_channel_from_id(plugin.bot.config.PENALTY_CHANNEL_ID)
+        channel = await fetch_channel_from_id(plugin.bot.config.PENALTY_CHANNEL_ID)  # type: ignore
         await channel_send_embed(channel, embed, penalty_row)
-        await event.respond(f"Mod Penalty erstellt in <#{plugin.bot.config.PENALTY_CHANNEL_ID}>!")
+        await event.respond(f"Mod Penalty erstellt in <#{plugin.bot.config.PENALTY_CHANNEL_ID}>!")  # type: ignore
     except Exception as e:
         await error_message("Fehler MP-01", e)
         content = f"Fehler **MP-01**"
@@ -64,7 +66,7 @@ async def mod_penalty(event: lightbulb.Context) -> None:
         await interaction_response(event, content, component=None)
         return
  
-    if event.channel_id != plugin.bot.config.COMMAND_CHANNEL_ID:
+    if event.channel_id != plugin.bot.config.COMMAND_CHANNEL_ID:  # type: ignore
         content = "Bitte nutze diesen Command nur in <#1143231143425089667>!"
         await interaction_response(event, content, component=None)
         return
@@ -77,7 +79,7 @@ async def mod_penalty(event: lightbulb.Context) -> None:
                 components.ButtonStyle.DANGER,
                 "permban",
                 label="Permanent Bannen",
-                emoji=plugin.bot.config.BAN_EMOJI_ID,
+                emoji=plugin.bot.config.BAN_EMOJI_ID, # type: ignore
             )
             await mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row)
             return
@@ -88,7 +90,7 @@ async def mod_penalty(event: lightbulb.Context) -> None:
                 components.ButtonStyle.PRIMARY,
                 "timeout",
                 label=f"{dauer} Timeouten",
-                emoji=plugin.bot.config.TIMEOUT_EMOJI_ID,
+                emoji=plugin.bot.config.TIMEOUT_EMOJI_ID,  # type: ignore
             )
             await mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row)
             return
@@ -99,7 +101,7 @@ async def mod_penalty(event: lightbulb.Context) -> None:
                 components.ButtonStyle.SECONDARY,
                 "warn",
                 label="Verwarnen",
-                emoji=plugin.bot.config.INFO_EMOJI_ID,
+                emoji=plugin.bot.config.INFO_EMOJI_ID,  # type: ignore
             )
             await mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row)
             return
@@ -161,11 +163,11 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
                         try:
                             await user_send_dm(user, embed, component=None)
                             embed = await create_embed("Permanent Gebannt", f"> **User:** {user.mention} | {user.username}\n> **ID:** {user.id}\n> **Regelbruch:** {regelbruch}\n> **Dauer:** Permanent\n> **Teammitglied:** {moderator}", "#E74D3C")
-                            channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)
+                            channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)  # type: ignore
                             await channel_send_embed(channel, embed, component=None)
                         except Exception as e:
                             embed = await create_embed("Permanent Gebannt", f"> **User:** {user.mention} | {user.username}\n> **ID:** {user.id}\n> **Regelbruch:** {regelbruch}\n> **Dauer:** Permanent\n> **Teammitglied:** {moderator}", "#E74D3C")
-                            channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)
+                            channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)  # type: ignore
                             await channel_send_embed(channel, embed, component=None)
                             await error_message("Fehler MP-04", e)
                             content = f"Fehler **MP-04**"
@@ -244,11 +246,11 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
                             try:
                                 await user_send_dm(user, embed, component=None)
                                 embed = await create_embed("Timeout", f"> **User:** {user.mention} | {user.username}\n> **ID:** {user.id}\n> **Regelbruch:** {regelbruch}\n> **Dauer:** Timeout {dauer}\n> **Teammitglied:** {moderator}", "#FF6669")
-                                channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)
+                                channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)  # type: ignore
                                 await channel_send_embed(channel, embed, component=None)
                             except Exception as e:
                                 embed = await create_embed("Timeout", f"> **User:** {user.mention} | {user.username}\n> **ID:** {user.id}\n> **Regelbruch:** {regelbruch}\n> **Dauer:** Timeout {dauer}\n> **Teammitglied:** {moderator}", "#FF6669")
-                                channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)
+                                channel = await fetch_channel_from_id(plugin.bot.config.MODERATION_LOG_CHANNEL_ID)  # type: ignore
                                 await channel_send_embed(channel, embed, component=None)
                                 await error_message("Fehler MP-04", e)
                                 content = f"Fehler **MP-04**"
