@@ -29,16 +29,14 @@ async def fetch_user_from_id(id):
 
 async def interaction_response(event, content, component=None):
     if component != None:
-        try:
-            await event.interaction.create_initial_response(
-                content=content,
-                components=[component],
-                flags=64,
-                response_type=hikari.ResponseType.MESSAGE_CREATE
-            )
-        except Exception as e:
-            await error_message("Fehler B-10", e)
-            print(f"Error: {e}")
+
+        await event.interaction.create_initial_response(
+            content=content,
+            components=[component],
+            flags=64,
+            response_type=hikari.ResponseType.MESSAGE_CREATE
+        )
+
     elif component == None:
         try:
             await event.interaction.create_initial_response(

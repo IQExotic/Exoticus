@@ -11,40 +11,13 @@ plugin = lightbulb.Plugin("sudo")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def dashboard(event: lightbulb.Context) -> None:
     embed = hikari.Embed(
-        description="""# Dashboard\nHere, you can change various essential server settings to customize your experience. Use the Buttons below to modify the settings:\n\n""",
+        title="Dashboard",
+        description="You can change all settings on the dashboard website. Click the button below to access it.",
         color="#00ffbb"
     )
     dashboard_button = plugin.bot.rest.build_message_action_row()
-    dashboard_button.add_interactive_button(
-                components.ButtonStyle.PRIMARY,
-                "Emoji ID's",
-                label="emoji_ids",
-            )
-    dashboard_button.add_interactive_button(
-                components.ButtonStyle.PRIMARY,
-                "Filter ID's",
-                label="filter_ids",
-            )
-    dashboard_button.add_interactive_button(
-                components.ButtonStyle.PRIMARY,
-                "Join Channel & Role ID's",
-                label="join_ids",
-            )
-    dashboard_button.add_interactive_button(
-                components.ButtonStyle.PRIMARY,
-                "Level Channel & Role ID's",
-                label="level_ids",
-            )
-    dashboard_button.add_interactive_button(
-                components.ButtonStyle.PRIMARY,
-                "Moderation Channel ID's",
-                label="moderation_ids",
-            )
-
-
+    dashboard_button.add_link_button("https://www.example.com", label="Dashboard", emoji="🌐")
     await interaction_response(event, embed, component=dashboard_button)
-
-
 
 
 def load(bot):
