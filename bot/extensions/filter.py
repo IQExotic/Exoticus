@@ -6,7 +6,7 @@ import json
 
 from datetime import datetime, timedelta
 from difflib import SequenceMatcher
-from .functions import *
+from ..data.static.functions import *
 
 
 

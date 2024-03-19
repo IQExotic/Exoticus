@@ -7,7 +7,7 @@ import hikari.interactions
 from datetime import datetime
 
 import requests
-from .functions import *
+from ..data.static.functions import *
 from .level import *
 from psycopg2.errors import UniqueViolation
 import io

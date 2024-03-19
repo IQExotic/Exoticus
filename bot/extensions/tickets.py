@@ -2,7 +2,7 @@ import hikari
 from hikari import CustomEmoji, components
 import lightbulb
 
-from .functions import *
+from ..data.static.functions import *
 
 
 plugin = lightbulb.Plugin("tickets")

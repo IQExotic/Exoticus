@@ -7,7 +7,7 @@ import datetime
 import random
 from datetime import datetime
 
-from .functions import *
+from ..data.static.functions import *
 
 
 

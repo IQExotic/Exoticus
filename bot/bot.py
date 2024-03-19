@@ -8,6 +8,8 @@ import datetime as dt
 
 from bot.config import Config
 from bot.database.db import Database
+from bot.cacheManager import clearAllCache
+from bot.data.static.functions import *
 
 class Bot(lightbulb.BotApp):
 
@@ -20,6 +22,7 @@ class Bot(lightbulb.BotApp):
         self._static = "./bot/data/static"
         self._transcripts = "./bot/data/transcripts"  # for ticket logs
         self.db = Database(self)
+
 
         if self.config.TOKEN:
             super().__init__(
@@ -47,6 +50,15 @@ class Bot(lightbulb.BotApp):
 
     async def on_starting(self, event: hikari.StartingEvent) -> None:
         print("🔄 • Running setup...")
+
+        print("🔄 • Clearing Cache...")
+        try:
+            clearAllCache()
+            print("✅ • Cache Cleared.")
+        except Exception as e:
+            print(f"❌ • Failed to clear cache")
+            print(e)
+
 
         print("🔄 • Connecting to database...")
         try:
@@ -92,6 +104,15 @@ class Bot(lightbulb.BotApp):
 
     async def on_stopping(self, event: hikari.StoppingEvent) -> None:
         print("🔄 • Shutting down...")
+
+        print("🔄 • Clearing Cache...")
+        try:
+            clearAllCache()
+            print("✅ • Cache Cleared.")
+        except Exception as e:
+            print(f"❌ • Failed to clear cache")
+            print(e)
+
         print("🔄 • Closing connection to Discord...")
 
     async def on_stopped(self, event: hikari.StoppedEvent) -> None:
@@ -104,9 +125,3 @@ class Bot(lightbulb.BotApp):
             print(e)
         
         print("✅ • Connection to Discord closed.")
-
-    
-    # async def load_config(self) -> None:
-    #     # Load the config from the database
-    #     guild_id = 678607632692543509
-    #     self.config.DEFAULT_PREFIX = await self.db.field(f"SELECT DEFAULT_PREFIX FROM {self.db.schema}.system WHERE GUILD_ID = $1", guild_id)

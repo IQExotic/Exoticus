@@ -1,7 +1,6 @@
 import hikari
 import lightbulb
-
-from .functions import *
+from ..data.static.functions import *
 
 plugin = lightbulb.Plugin("moderation")
 
@@ -10,9 +9,12 @@ plugin = lightbulb.Plugin("moderation")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def ping(event: lightbulb.Context) -> None:
     guild_id = event.guild_id
+    name = "Tim"
     await event.respond("That")
 
 
+
+############################################################################################################
 async def mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row):
     try:
         embed = hikari.Embed(
