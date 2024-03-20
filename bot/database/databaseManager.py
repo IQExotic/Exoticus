@@ -26,52 +26,51 @@ class DatabaseManger:
         self.connection.close()
 
 
-    def select(self, table: str, fields: list, limit=None, where=None, where_values=None):
-        # fields -> ['field1', 'field2']
-        # where -> "WHERE user_id = {}"
-        # where_values -> [4]  -> "WHERE user_id = 4"
-        if where and where_values:
+    def select(self, table: str, fields: list, data: dict, limit=None, where=None):
+        # fields -> "column1, column2"
+        # value -> "value1, value2"
+        # data -> {"user_id": 10}
+        # where -> "WHERE user_id = %(user_id)d"
+        if where:
             if limit:
                 cursor = self._getCursor()
-                where.format(*where_values)
-                cursor.execute("SELECT {} FROM {} WHERE {} LIMIT {}};".format(self._formatFields(fields), table, where, limit))
-                return cursor.query.decode('utf-8')
+                q = cursor.mogrify("SELECT {} FROM {} WHERE {} LIMIT {}};".format(self._formatFields(fields), table, where, limit), data)
+                return q.decode('utf-8')
+            
             cursor = self._getCursor()
-            where.format(*where_values)
-            cursor.execute("SELECT {} FROM {} WHERE {};".format(self._formatFields(fields), table, where))
-            return cursor.query.decode('utf-8')
+            cursor.mogrify("SELECT {} FROM {} WHERE {};".format(self._formatFields(fields), table, where), data)
+            return q.decode('utf-8')
         
         if limit:
             cursor = self._getCursor()
-            where.format(*where_values)
-            cursor.execute("SELECT {} FROM {} LIMIT {};".format(self._formatFields(fields), table, limit))
-            return cursor.query.decode('utf-8')
+            cursor.mogrify("SELECT {} FROM {} LIMIT {};".format(self._formatFields(fields), table, limit), data)
+            return q.decode('utf-8')
+        
         cursor = self._getCursor()
-        cursor.execute("SELECT {} FROM {};".format(self._formatFields(fields), table))
-        return cursor.query.decode('utf-8')
+        q = cursor.mogrify("SELECT {} FROM {};".format(self._formatFields(fields), table), data)
+        return q.decode('utf-8')
 
 
-    def insert(self, table: str, fields: list, values: list):
-        # fields -> ['field1', 'field2']
-        # values -> ['value1 for field1', 'value2 for field2']
+    def insert(self, table: str, fields: list, value: str, data: dict):
+        # fields -> "column1, column2"
+        # value -> "value1, value2"
+        # data -> {"user_id": 10}
         cursor = self._getCursor()
-        cursor.execute("INSERT INTO {} ({}) VALUES ({});".format(table, self._formatFields(fields), self._formatFields(values)))
-        return cursor.query.decode('utf-8')
+        q = cursor.mogrify("INSERT INTO {} ({}) VALUES ({});".format(table, self._formatFields(fields), value), data)
+        return q.decode('utf-8')
 
 
 
-    def update(self, table: str, fields: str, values: list, where: str, where_values: list):
-        # fields -> "column1 = {}, column2 = {}"
-        # values -> ['value1 for field1', 'value2 for field2']
-        # where -> "WHERE user_id = {}"
-        # where_values -> [4]  -> "WHERE user_id = 4"
+    def update(self, table: str, fields: str, where: str, data: dict):
+        # fields -> "column1 = %(value1)s, column2 = %(value2)s"
+        # where -> "WHERE user_id = %(user_id)d"
+        # data ->  {"user_id": 10}
         cursor = self._getCursor()
-        fields.format(*values)
-        where.format(*where_values)
-        cursor.execute("UPDATE {} SET {} WHERE {};".format(table, fields, where))
-        return cursor.query.decode('utf-8')
+        q = cursor.mogrify("UPDATE {} SET {} WHERE {};".format(table, fields, where), data)
+        return q.decode('utf-8')
 
 
+"""
 
 db_params = {
     'host': 'localhost',
@@ -84,15 +83,16 @@ db_params = {
 # Establish connection
 try:
     connection = psycopg2.connect(**db_params)
+    connection.set_session(autocommit=False)
     print("Connection to PostgreSQL database successful.")
 
         # Pass the connection to your DatabaseManager
     if connection:
         db_manager = DatabaseManger(connection)
-        print(db_manager.select("* FROM MYTABLE; --", ["field1", "field2"]))
-        print(db_manager.select("MYTABLE", ["field1", "field2"], 5))
-        print(db_manager.select("MYTABLE", ["field1", "field2"], 5, "WHERE user_id = {} AND [name] = {}", [10, "John"]))
-        print(db_manager.select("MYTABLE", ["field1", "field2"], where="WHERE user_id = {} AND [name] = {}", where_values=[10, "John"]))
-
+        print(db_manager.select("myTabel", ["field1", "field2%(username)s"], {"username": "John"}))
+        
 except psycopg2.Error as e:
     print("Error connecting to PostgreSQL database:", e)
+
+"""
+
