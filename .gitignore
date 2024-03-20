@@ -1,5 +1,4 @@
+
 .env
-__pycache__/
-todo.todo
-.env
-.env
+*.pyc
+*.todo

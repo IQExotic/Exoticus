@@ -1,15 +1,27 @@
 import hikari
 import lightbulb
+
 from ..data.static.functions import *
 
 plugin = lightbulb.Plugin("moderation")
+
+def load(bot):
+    bot.add_plugin(plugin)
+    global bot_obj
+    bot_obj = bot
+
+
+def unload(bot):
+    bot.remove_plugin(plugin)
+    global bot_obj
+    bot_obj = bot
+
 
 @plugin.command()
 @lightbulb.command("ping", "ping pong!")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def ping(event: lightbulb.Context) -> None:
     guild_id = event.guild_id
-    name = "Tim"
     await event.respond("That")
 
 
@@ -138,7 +150,7 @@ def create_db_sanction():
     case_id = 0000  # reade highes case_id
     case_id += 1
     table = "moderation"
-    db_insert_value(table, 'case_id', case_id)
+    #db_insert_value(table, 'case_id', case_id)
 
 
 @plugin.listener(hikari.InteractionCreateEvent)
@@ -341,9 +353,4 @@ async def on_interaction_create(event: hikari.InteractionCreateEvent):
                     return
                 
 
-def load(bot):
-    bot.add_plugin(plugin)
 
-
-def unload(bot):
-    bot.remove_plugin(plugin)

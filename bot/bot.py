@@ -8,8 +8,9 @@ import datetime as dt
 
 from bot.config import Config
 from bot.database.db import Database
-from bot.cacheManager import clearAllCache
+from bot.database.cacheManager import clearAllCache
 from bot.data.static.functions import *
+from pypika import Query, Table, Field
 
 class Bot(lightbulb.BotApp):
 
@@ -22,6 +23,7 @@ class Bot(lightbulb.BotApp):
         self._static = "./bot/data/static"
         self._transcripts = "./bot/data/transcripts"  # for ticket logs
         self.db = Database(self)
+        
 
 
         if self.config.TOKEN:

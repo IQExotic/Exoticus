@@ -50,10 +50,10 @@ class Database:
             await self.executemany(f"INSERT INTO {self.schema}.system (GUILD_ID) VALUES ($1) ON CONFLICT DO NOTHING", [(g.id,) for g in my_guilds])
 
             # Remove.
-            stored = await self.column("SELECT GUILD_ID FROM system")
+            stored = await self.column(f"SELECT GUILD_ID FROM {self.schema}.system")
             member_of = [g.id for g in my_guilds]
             removals = [(g_id,) for g_id in set(stored) - set(member_of)]
-            await self.executemany("DELETE FROM system WHERE GUILD_ID = $1", removals)
+            await self.executemany(f"DELETE FROM {self.schema}.system WHERE GUILD_ID = $1", removals)
 
             # Commit.
             await self.commit()
@@ -127,3 +127,14 @@ class Database:
     async def executescript(self, path: str, conn: asyncpg.Connection) -> None:
         async with aiofiles.open(path, "r", encoding="utf-8") as script:
             await conn.execute((await script.read()))
+
+
+# Example of how to update a record in the database
+"""
+from pypika import Query, Table
+
+    if bot_obj:
+        sector = Schema(bot_obj.db.schema)
+        query = Query.update(sector.system).set(sector.system.log_channel_id, '12321313').where(sector.system.guild_id == guild_id)
+        await bot_obj.db.execute(query.get_sql())  
+"""
