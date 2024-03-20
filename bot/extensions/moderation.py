@@ -25,7 +25,6 @@ async def ping(event: lightbulb.Context) -> None:
     await event.respond("That")
 
 
-
 ############################################################################################################
 async def mod_penalty_send(event, user, sanktion, dauer, regelbruch, proof, zusätzliches, moderator, id, penalty_row):
     try:
